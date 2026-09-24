@@ -10,6 +10,7 @@ import {
 import { BarChart3 } from "lucide-react";
 
 import colors from "tailwindcss/colors";
+import { formatProductName } from "@/utils/utilis";
 
 const COLORS = [
     colors.violet["500"],
@@ -26,15 +27,9 @@ const data = [
     { product: "Pizza", amount: 150 },
 ];
 
-const formatProductName = (name: string) => {
-    return name.length > 12
-        ? `${name.substring(0, 12)}...`
-        : name;
-};
-
 export function PopularProductChart() {
     return (
-        <Card className="col-span-3">
+        <Card className="col-span-6 md:col-span-3">
             <CardHeader className="pb-8">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-base font-medium">
