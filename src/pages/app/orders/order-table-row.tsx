@@ -3,20 +3,21 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { ArrowRight, Search, X } from "lucide-react";
 import { OrderDetalls } from "./order-detals";
+import { OrderStatus } from "./order-status";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-interface Order {
-    id: string;
-    createdAt: string;
-    status: "Pendente" | "Aprovado" | "Cancelado";
-    customer: string;
-    total: string;
+interface OrderTableRowProps {
+    order: {
+        orderId: string;
+        createdAt: string;
+        status: "canceled" | "delivered" | "delivering" | "pending" | "processing";
+        customerName: string;
+        total: number;
+    }
 }
 
-interface OrdersTableRowProps {
-    order: Order;
-}
-
-export function OrdersTableRow({ order }: OrdersTableRowProps) {
+export function OrderTableRow({ order }: OrderTableRowProps) {
     return (
         <TableRow>
             {/* Ver detalhes */}
@@ -44,53 +45,39 @@ export function OrdersTableRow({ order }: OrdersTableRowProps) {
 
             {/* ID */}
             <TableCell className="font-mono text-xs font-medium">
-                {order.id}
+                {order.orderId}
             </TableCell>
 
             {/* Data */}
             <TableCell className="whitespace-nowrap text-muted-foreground">
-                {order.createdAt}
+                {formatDistanceToNow(order.createdAt, {
+                    locale: ptBR,
+                    addSuffix: true,
+                })}
             </TableCell>
 
             {/* Status */}
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <span
-                        className={`h-2 w-2 rounded-full ${order.status === "Pendente"
-                            ? "bg-yellow-500"
-                            : order.status === "Aprovado"
-                                ? "bg-green-500"
-                                : "bg-red-500"
-                            }`}
-                    />
-
-                    <span
-                        className={`font-medium ${order.status === "Pendente"
-                            ? "text-yellow-600"
-                            : order.status === "Aprovado"
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                    >
-                        {order.status}
-                    </span>
-                </div>
+               <OrderStatus status={order.status} />
             </TableCell>
 
             {/* Cliente */}
             <TableCell className="font-medium">
-                {order.customer}
+                {order.customerName}
             </TableCell>
 
             {/* Total */}
             <TableCell className="whitespace-nowrap font-medium">
-                {order.total}
+                {order.total.toLocaleString('pt-AO', {
+                    style: 'currency',
+                    currency: 'AOA'
+                })}
             </TableCell>
 
             {/* Acções */}
             <TableCell>
                 <div className="flex items-center gap-1">
-                    {order.status === "Pendente" && (
+                    {order.status === "pending" && (
                         <>
                             <Button
                                 variant="ghost"

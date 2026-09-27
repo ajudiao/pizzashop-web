@@ -6,41 +6,17 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { OrdersTableRow } from "./order-table-row";
+import { OrderTableRow } from "./order-table-row";
 import { OrdersTableFilters } from "./order-table-filter";
 import { Pagination } from "@/components/Pagination";
-
-const orders: Array<{
-    id: string;
-    createdAt: string;
-    status: "Pendente" | "Aprovado" | "Cancelado";
-    customer: string;
-    total: string;
-}> = [
-        {
-            id: "1234567890",
-            createdAt: "2023-06-01",
-            status: "Pendente",
-            customer: "João Silva",
-            total: "AOA 100,00",
-        },
-        {
-            id: "0987654321",
-            createdAt: "2023-06-02",
-            status: "Aprovado",
-            customer: "Maria Souza",
-            total: "AOA 200,00",
-        },
-        {
-            id: "5678901234",
-            createdAt: "2023-06-03",
-            status: "Cancelado",
-            customer: "Pedro Santos",
-            total: "AOA 150,00",
-        },
-    ];
+import { useQuery } from "@tanstack/react-query";
+import { getOrders } from "@/api/get-orders";
 
 export function Orders() {
+    const { data: result } = useQuery({
+        queryKey: ['orders'],
+        queryFn: getOrders,
+    })
     return (
         <>
             <Helmet title="Pedidos" />
@@ -90,12 +66,9 @@ export function Orders() {
                         </TableHeader>
 
                         <TableBody>
-                            {orders.map((order) => (
-                                <OrdersTableRow
-                                    key={order.id}
-                                    order={order}
-                                />
-                            ))}
+                            {result && result.orders.map((order) => {
+                                return <OrderTableRow key={order.orderId} order={order} />
+                            })}
                         </TableBody>
                     </Table>
                 </div>
