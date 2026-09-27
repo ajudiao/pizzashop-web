@@ -9,9 +9,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/api/get-profile";
 import { getManagedRestaurant } from "@/api/get-managed-restaurant";
+import { Skeleton } from "./ui/skeleton";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { StoreProfileDialog } from "./store-profile-dialog";
+import { updateProfile } from "@/api/update-profile";
 
 export function AccountMenu() {
     const { data: profile, isLoading: isLoadingProfile } = useQuery({
@@ -24,34 +28,52 @@ export function AccountMenu() {
     })
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger
-                render={
-                    <Button variant='outline' className="flex items-center gap-2 select-none" />
-                }
-            >
-                {managedRestaurant?.name}
-                <ChevronDown className="h-4 w-4" />
-            </DropdownMenuTrigger>
+        <Dialog>
+            <DropdownMenu>
+                <DropdownMenuTrigger
+                    render={
+                        <Button variant='outline' className="flex items-center gap-2 select-none" />
+                    }
+                >
+                    {
+                        isLoadindManagedRestaurant ? (<Skeleton className="h-4 w-48" />) : managedRestaurant?.name
+                    }
+                    <ChevronDown className="h-4 w-4" />
+                </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuGroup>
-                    <DropdownMenuLabel className="flex flex-col">
-                        <span>{profile?.name}</span>
-                        <span className="text-xs font-normal text-muted-foreground">{profile?.email}</span>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <Building className="mr-2 w-4 h-4" />
-                        <span>Perfil da loja</span>
-                    </DropdownMenuItem>
+                <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuGroup>
+                        <DropdownMenuLabel className="flex flex-col">
+                            {isLoadingProfile ? (
+                                <div className="space-y-1.5">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-3 w-24" />
+                                </div>
+                            ) : (
+                                <>
+                                    <span>{profile?.name}</span>
+                                    <span className="text-xs font-normal text-muted-foreground">{profile?.email}</span>
+                                </>
+                            )}
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DialogTrigger nativeButton={false}
+                            render={
+                                <DropdownMenuItem>
+                                    <Building className="mr-2 h-4 w-4" />
+                                    <span>Perfil da loja</span>
+                                </DropdownMenuItem>
+                            }
+                        />
+                        <DropdownMenuItem className="text-rose-500 dark:text-rose-400">
+                            <LogOut className="mr-2 w-4 h-4" />
+                            <span>Sair</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </DropdownMenuContent>
+            </DropdownMenu>
 
-                    <DropdownMenuItem className="text-rose-500 dark:text-rose-400">
-                        <LogOut className="mr-2 w-4 h-4" />
-                        <span>Sair</span>
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-            </DropdownMenuContent>
-        </DropdownMenu >
+            <StoreProfileDialog />
+        </Dialog>
     );
 }
