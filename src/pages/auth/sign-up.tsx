@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { registerRestaurant } from "@/api/register-restaurant";
+import da from "zod/v4/locales/da.cjs";
 
 const signUpFormSchema = z.object({
   restauranteName: z.string(),
@@ -22,23 +25,32 @@ export function SignUp() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm<SignUpForm>({
     resolver: zodResolver(signUpFormSchema),
   });
 
+  const { mutateAsync: registerRestaurantFn } = useMutation({
+    mutationFn: registerRestaurant,
+  })
+
   async function handleSignUp(data: SignUpForm) {
     try {
-      console.log(data);
-
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await registerRestaurantFn({
+        restaurantName: data.restauranteName,
+        managerName: data.managerName,
+        email: data.email,
+        phone: data.phone
+      })
 
       toast.success("Restaurante cadastrado com sucesso", {
         action: {
           label: 'Login',
-          onClick: () => navigate('/sign-in')
+          onClick: () => navigate(`/sign-in?email=${data.email}`)
         }
       });
+      reset()      
     } catch {
       toast.error('Erro ao cadastrar restaurante.')
     }
@@ -49,12 +61,7 @@ export function SignUp() {
       <Helmet title="Cadastro" />
 
       <div className="p-8">
-        <Button
-          className="absolute right-8 top-8 p-4 cursor-pointer"
-          onClick={() => navigate("/sign-in")}
-        >
-          Fazer login
-        </Button>
+
         <div className="flex w-87.5 flex-col justify-center gap-6">
           <div className="flex flex-col gap-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -129,8 +136,16 @@ export function SignUp() {
             >
               {isSubmitting ? "Aguarde..." : "Cadastrar"}
             </Button>
+            <Button
+              type="button"
 
-            <p className="px-6 text-center leading-relaxed text-muted-foreground">
+              className="w-full cursor-pointer"
+              onClick={() => navigate("/sign-in")}
+            >
+              Fazer Login
+            </Button>
+
+            <p className="px-6 text-center text-sm leading-relaxed text-muted-foreground">
               Ao continuar, voce concorda com nossos{" "}
               <a className="underline underline-offset-3"> termos serviços</a> e{" "}
               <a className="underline underline-offset-3">

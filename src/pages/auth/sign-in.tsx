@@ -1,9 +1,11 @@
+import { signIn } from "@/api/sign-in";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useMutation } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -15,28 +17,37 @@ type signInForm = z.infer<typeof signInForm>;
 
 export function SignIn() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<signInForm>();
+  } = useForm<signInForm>({
+    defaultValues: {
+      email: searchParams.get('email') ?? ''
+    }
+  });
+
+  const { mutateAsync: authenticate } = useMutation({
+    mutationFn: signIn,
+  })
 
   async function handleSignIn(data: signInForm) {
-    console.log(data);
+    await authenticate({ email: data.email })
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    toast.success("Enviamoes um link de autenticação para o seu email");
+    toast.success("Enviamoes um link de autenticação para o seu email", {
+      action: {
+        label: "Reenviar",
+        onClick: () => handleSignIn(data),
+      }
+    });
   }
 
   return (
     <div>
       <Helmet title="Login" />
       <div className="p-8">
-        <Button className="absolute right-8 top-8 p-4 cursor-pointer" onClick={() => navigate('/sign-up')}>
-          Novo estabelecimento
-        </Button>
-
         <div className="w-87.5 flex flex-col justify-center gap-6">
           <div className="flex flex-col gap-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -62,6 +73,14 @@ export function SignIn() {
               className="w-full cursor-pointer"
             >
               Acessar painel
+            </Button>
+            <Button
+              type="button"
+
+              className="w-full cursor-pointer"
+              onClick={() => navigate("/sign-up")}
+            >
+              Novo estabelecimento
             </Button>
           </form>
         </div>

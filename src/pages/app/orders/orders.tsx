@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { OrdersTableRow } from "./order-table-row";
 import { OrdersTableFilters } from "./order-table-filter";
-import { Pagination } from "@/components/pagination";
+import { Pagination } from "@/components/Pagination";
 
 const orders: Array<{
     id: string;

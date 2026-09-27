@@ -4,7 +4,7 @@ import { Pizza } from "lucide-react";
 
 export function AuthLayout() {
   return (
-    <div className="min-h-screen grid grid-cols-2 antialiased">
+    <div className="min-h-screen grid lg:grid-cols-2 antialiased">
       <div className="h-full border-r border-foreground/5 p-10 bg-muted text-muted-foreground flex flex-col justify-between">
         <Link
           to="/"
