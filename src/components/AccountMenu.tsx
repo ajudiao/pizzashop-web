@@ -9,22 +9,23 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/api/get-profile";
 import { getManagedRestaurant } from "@/api/get-managed-restaurant";
 import { Skeleton } from "./ui/skeleton";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import { StoreProfileDialog } from "./store-profile-dialog";
-import { updateProfile } from "@/api/update-profile";
 
 export function AccountMenu() {
     const { data: profile, isLoading: isLoadingProfile } = useQuery({
         queryKey: ['profile'],
         queryFn: getProfile,
+        staleTime: Infinity
     })
     const { data: managedRestaurant, isLoading: isLoadindManagedRestaurant } = useQuery({
         queryKey: ['managed-restaurant'],
         queryFn: getManagedRestaurant,
+        staleTime: Infinity
     })
 
     return (
