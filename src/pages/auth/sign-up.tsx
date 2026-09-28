@@ -8,8 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { registerRestaurant } from "@/api/register-restaurant";
-import da from "zod/v4/locales/da.cjs";
+import { registerRestaurant } from "@/api/register-restaurant"
 
 const signUpFormSchema = z.object({
   restauranteName: z.string(),
